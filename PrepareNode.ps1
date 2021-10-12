@@ -75,10 +75,11 @@ if ($ContainerRuntime -eq "Docker") {
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
         Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$False -Force
         Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$False -Force
-        Set-Service Docker -StartupType 'Automatic'
         }
- #todo - add containerD installation script here       
+ #todo - add containerD installation script here
+    Set-Service $ContainerRuntime -StartupType 'Automatic'
     Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
+    Write-Output "After reboot - run this script again"
     exit 0    
 }
 
