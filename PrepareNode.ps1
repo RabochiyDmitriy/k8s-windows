@@ -58,7 +58,7 @@ function RemoveWindowsFeatures {
         $f = Get-WindowsFeature -Name $feature
         if ($f.Installed) {
             Write-Warning "Windows feature: '$feature' is installed, removing it now"
-            $allFeaturesInstalled = $false
+            $removedFeaturesInstalled = $false
         }
     }
     return $removedFeaturesInstalled
