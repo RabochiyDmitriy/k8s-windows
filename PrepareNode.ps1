@@ -45,6 +45,7 @@ function ValidateWindowsFeatures {
             Write-Warning "Windows feature: '$feature' is not installed."
             $allFeaturesFinished = $false
         }
+    }
     foreach ($feature in $removedWindowsFeatures) {
         $f = Get-WindowsFeature -Name $feature
         if ($f.Installed) {
