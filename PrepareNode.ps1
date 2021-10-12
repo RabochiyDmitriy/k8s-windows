@@ -77,6 +77,7 @@ if (-not (RemoveWindowsFeatures)) {
 
 
 If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$False -Force
 }
 
