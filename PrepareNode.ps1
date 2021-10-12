@@ -19,15 +19,23 @@ PS> .\PrepareNode.ps1 -KubernetesVersion v1.22.2 -ContainerRuntime Docker
 
 #>
 
+Param(
+    [parameter(Mandatory = $true, HelpMessage="Kubernetes version to use")]
+    [string] $KubernetesVersion,
+    [parameter(HelpMessage="Container runtime that Kubernets will use")]
+    [ValidateSet("containerD", "Docker")]
+    [string] $ContainerRuntime = "Docker"
+)
+$ErrorActionPreference = 'Stop'
+
+
 $requiredWindowsFeatures = @(
     "Containers"
     )
-
 $removedWindowsFeatures = @(
     "Windows-Defender",
     "WoW64-Support"
     )
-
 
 function ValidateWindowsFeatures {
     $allFeaturesInstalled = $true
@@ -78,11 +86,11 @@ if (-not (RemoveWindowsFeatures)) {
 
 If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-    Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$False -Force
+    Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$true -Force
 }
 
 If(-not(Get-Package DockerMsftProvider -ErrorAction silentlycontinue)){
-    Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$False -Force
+    Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$true -Force
     Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
     Set-Service Docker -StartupType 'Automatic'
     Write-Output "Please reboot last time and re-run this script again."
@@ -90,14 +98,6 @@ If(-not(Get-Package DockerMsftProvider -ErrorAction silentlycontinue)){
 }
 
 
-Param(
-    [parameter(Mandatory = $true, HelpMessage="Kubernetes version to use")]
-    [string] $KubernetesVersion,
-    [parameter(HelpMessage="Container runtime that Kubernets will use")]
-    [ValidateSet("containerD", "Docker")]
-    [string] $ContainerRuntime = "Docker"
-)
-$ErrorActionPreference = 'Stop'
 
 function DownloadFile($destination, $source) {
     Write-Host("Downloading $source to $destination")
