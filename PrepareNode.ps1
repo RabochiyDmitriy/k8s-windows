@@ -38,15 +38,21 @@ $removedWindowsFeatures = @(
     )
 
 function ValidateWindowsFeatures {
-    $allFeaturesInstalled = $true
+    $allFeaturesFinished = $true
     foreach ($feature in $requiredWindowsFeatures) {
         $f = Get-WindowsFeature -Name $feature
         if (-not $f.Installed) {
             Write-Warning "Windows feature: '$feature' is not installed."
-            $allFeaturesInstalled = $false
+            $allFeaturesFinished = $false
+        }
+    foreach ($feature in $removedWindowsFeatures) {
+        $f = Get-WindowsFeature -Name $feature
+        if ($f.Installed) {
+            Write-Warning "Windows feature: '$feature' is installed, removing it now"
+            $allFeaturesFinished = $false
         }
     }
-    return $allFeaturesInstalled
+    return $allFeaturesFinished
 }
 
 if (-not (ValidateWindowsFeatures)) {
@@ -55,30 +61,10 @@ if (-not (ValidateWindowsFeatures)) {
     foreach ($feature in $requiredWindowsFeatures) {
         Install-WindowsFeature -Name $feature
     }
-
-    Write-Output "Please reboot and re-run this script."
-    exit 0
-}
-
-function RemoveWindowsFeatures {
-    $removedFeaturesInstalled = $true
-    foreach ($feature in $removedWindowsFeatures) {
-        $f = Get-WindowsFeature -Name $feature
-        if ($f.Installed) {
-            Write-Warning "Windows feature: '$feature' is installed, removing it now"
-            $removedFeaturesInstalled = $false
-        }
-    }
-    return $removedFeaturesInstalled
-}
-
-if (-not (RemoveWindowsFeatures)) {
     Write-Output "Removing required windows features..."
-
     foreach ($feature in $removedWindowsFeatures) {
         UnInstall-WindowsFeature -Name $feature -Remove
     }
-
     Write-Output "Please reboot and re-run this script."
     exit 0
 }
