@@ -78,9 +78,11 @@ if ($ContainerRuntime -eq "Docker") {
         }
  #todo - add containerD installation script here
     Set-Service $ContainerRuntime -StartupType 'Automatic'
-    Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
-    Write-Output "After reboot - run this script again"
-    exit 0    
+    if (Get-Service -Name Docker).Status -ne Running {    
+        Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
+        Write-Output "After reboot - run this script again"
+        exit 0
+    }
 }
 
 function DownloadFile($destination, $source) {
