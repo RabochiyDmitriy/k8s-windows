@@ -62,6 +62,7 @@ function RemoveWindowsFeatures {
         }
     }
     return $removedFeaturesInstalled
+}
 
 if (-not (RemoveWindowsFeatures)) {
     Write-Output "Removing required windows features..."
