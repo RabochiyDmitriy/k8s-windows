@@ -87,16 +87,12 @@ if (-not (RemoveWindowsFeatures)) {
 If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$true -Force
-}
-
-If(-not(Get-Package DockerMsftProvider -ErrorAction silentlycontinue)){
     Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$true -Force
     Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
     Set-Service Docker -StartupType 'Automatic'
     Write-Output "Please reboot last time and re-run this script again."
-    exit 0
+    exit 0    
 }
-
 
 
 function DownloadFile($destination, $source) {
