@@ -66,19 +66,21 @@ if (-not (ValidateWindowsFeatures)) {
     foreach ($feature in $removedWindowsFeatures) {
         UnInstall-WindowsFeature -Name $feature -Remove
     }
+    Write-Output "Removing all available features to free up space"
+    Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
 }
 
-
-If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-    Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$False -Force
-    Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$False -Force
-    Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
-    Set-Service Docker -StartupType 'Automatic'
-    Write-Output "Please reboot and re-run this script again."
+if ($ContainerRuntime -eq "Docker") {
+    If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+        Install-Module DockerMsftProvider -Repository PSGallery -Confirm:$False -Force
+        Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$False -Force
+        Set-Service Docker -StartupType 'Automatic'
+        }
+ #todo - add containerD installation script here       
+    Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
     exit 0    
 }
-
 
 function DownloadFile($destination, $source) {
     Write-Host("Downloading $source to $destination")
@@ -190,5 +192,4 @@ if ($ContainerRuntime -eq "Docker") {
 
 New-NetFirewallRule -Name kubelet -DisplayName 'kubelet' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 10250
 
-Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
-Write-Output "To join this node to existing cluster use output from "kubeadm token create --print-join-command" "
+Write-Output "To join this node to existing cluster use output from 'kubeadm token create --print-join-command' "
