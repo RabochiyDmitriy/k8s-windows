@@ -66,8 +66,6 @@ if (-not (ValidateWindowsFeatures)) {
     foreach ($feature in $removedWindowsFeatures) {
         UnInstall-WindowsFeature -Name $feature -Remove
     }
-    Write-Output "Please reboot and re-run this script."
-    exit 0
 }
 
 
@@ -77,7 +75,7 @@ If(-not(Get-InstalledModule DockerMsftProvider -ErrorAction silentlycontinue)){
     Install-Package -Name Docker -ProviderName DockerMsftProvider -Confirm:$False -Force
     Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
     Set-Service Docker -StartupType 'Automatic'
-    Write-Output "Please reboot last time and re-run this script again."
+    Write-Output "Please reboot and re-run this script again."
     exit 0    
 }
 
@@ -191,3 +189,6 @@ if ($ContainerRuntime -eq "Docker") {
 }
 
 New-NetFirewallRule -Name kubelet -DisplayName 'kubelet' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 10250
+
+Write-Output "Please reboot machine to apply all features and start $ContainerRuntime service."
+Write-Output "To join this node to existing cluster use output from "kubeadm token create --print-join-command" "
