@@ -67,7 +67,7 @@ function RemoveWindowsFeatures {
 if (-not (RemoveWindowsFeatures)) {
     Write-Output "Removing required windows features..."
 
-    foreach ($feature in $requiredWindowsFeatures) {
+    foreach ($feature in $removedWindowsFeatures) {
         UnInstall-WindowsFeature -Name $feature -Remove
     }
 
