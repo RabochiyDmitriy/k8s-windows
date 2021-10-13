@@ -33,8 +33,8 @@ $requiredWindowsFeatures = @(
     "Containers"
     )
 $removedWindowsFeatures = @(
-    "Windows-Defender",
-    "WoW64-Support"
+    "Windows-Defender"
+#    "WoW64-Support"
     )
 
 function ValidateWindowsFeatures {
