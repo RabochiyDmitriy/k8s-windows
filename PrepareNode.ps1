@@ -66,8 +66,8 @@ if (-not (ValidateWindowsFeatures)) {
     foreach ($feature in $removedWindowsFeatures) {
         UnInstall-WindowsFeature -Name $feature -Remove
     }
-    Write-Output "Removing all available features to free up space"
-    Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
+#    Write-Output "Removing all available features to free up space"
+#    Get-WindowsFeature | ? installstate -eq "Available" | Uninstall-WindowsFeature -Remove
 }
 
 if ($ContainerRuntime -eq "Docker") {
